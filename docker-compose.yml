@@ -1,0 +1,41 @@
+version: '2'
+services:
+  gitlab-server:
+    image: gitlab/gitlab-ce:latest
+    restart: always
+    command: bash -c "chmod 777 /generate_certs.sh;
+             /generate_certs.sh ${GITLAB_SSL_CERT} ${GITLAB_SSL_KEY} ${GITLAB_CERT_SUBJECT} ${REGENERATE_CERT} ${GENERATE_SELF_SIGNED_CERT};
+             /assets/wrapper"
+    environment:
+      GITLAB_OMNIBUS_CONFIG: |
+        external_url '${GITLAB_EXTERNAL_URL}'
+        gitlab_rails['gitlab_shell_ssh_port'] = ${GITLAB_SHELL_PORT}
+        nginx['redirect_http_to_https'] = ${GITLAB_REDIRECT_HTTPS}
+        nginx['ssl_certificate'] = "${GITLAB_SSL_CERT}"
+        nginx['ssl_certificate_key'] = "${GITLAB_SSL_KEY}"
+        gitlab_rails['smtp_enable'] = ${GITLAB_SMTP_ENABLE}
+        gitlab_rails['smtp_address'] = "${GITLAB_SMTP_ADDRESS}"
+        gitlab_rails['smtp_port'] = ${GITLAB_SMTP_PORT}
+        gitlab_rails['smtp_user_name'] = "${GITLAB_SMTP_USER_NAME}"
+        gitlab_rails['smtp_password'] = "${GITLAB_SMTP_PASSWORD}"
+        gitlab_rails['smtp_domain'] = "${GITLAB_SMTP_DOMAIN}"
+        gitlab_rails['smtp_authentication'] = "${GITLAB_SMTP_AUTHENTICATION}"
+        gitlab_rails['smtp_enable_starttls_auto'] = ${GITLAB_SMTP_ENABLE_STARTTLS_AUTO}
+        gitlab_rails['smtp_tls'] = ${GITLAB_SMTP_TLS}
+        gitlab_rails['smtp_openssl_verify_mode'] = '${GITLAB_SMTP_OPENSSL_VERIFY_MODE}'
+        gitlab_rails['rack_attack_git_basic_auth'] = { 
+          'enabled' => ${GITLAB_GIT_BASIC_AUTH_ENABLED}, 
+          'ip_whitelist' => ["127.0.0.1"], 
+          'maxretry' => ${GITLAB_GIT_BASIC_AUTH_MAX_RETRY}, 
+          'findtime' => ${GITLAB_GIT_BASIC_AUTH_FIND_TIME}, 
+          'bantime' => ${GITLAB_GIT_BASIC_AUTH_BAN_TIME} 
+        }
+    volumes:
+      - ./gitlab/config:/etc/gitlab
+      - ./gitlab/logs:/var/log/gitlab
+      - ./gitlab/data:/var/opt/gitlab
+      - ./gitlab/backups:/var/opt/gitlab/backups
+      - ./generate_certs.sh:/generate_certs.sh
+    ports:
+      - "${GITLAB_HTTP_HOST_PORT}:${GITLAB_HTTP_INTERNAL_PORT}"
+      - "${GITLAB_SHELL_PORT}:22"
