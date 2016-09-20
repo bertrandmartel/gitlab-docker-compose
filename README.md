@@ -2,7 +2,7 @@
 
 A fully configurable gitlab CE docker-compose build 
 
-It include a feature to generate a self-signed certificate
+It also includes a feature to generate a self-signed certificate
 
 ## Docker-compose
 
@@ -43,7 +43,7 @@ This configuration is editable in `vars-template.sh` that must be sourced before
 | GITLAB_GIT_BASIC_AUTH_MAX_RETRY  | max retry for passowrd attempt                                | 10                                                                     |
 | GITLAB_GIT_BASIC_AUTH_FIND_TIME  | number of time allowed before ban                                | 60                                                                     |
 | GITLAB_GIT_BASIC_AUTH_BAN_TIME   | ban time                                 | 3600                                                                   |
-| REGENERATE_CERT                  | specify if cert should be regenerated each build                                | false                                                                  |
+| REGENERATE_CERT                  | specify if cert should be regenerated each time                                | false                                                                  |
 | GENERATE_SELF_SIGNED_CERT        | specify to generate self signed certificates                                | true                                                                   |
 
 (*) /C=FR/ST=Paris/L=Paris/O=GlobalSecurity/OU=ITDepartment/CN=example.com
